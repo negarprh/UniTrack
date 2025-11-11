@@ -24,3 +24,4 @@ GoogleService-Info.plist
 .DS_Store
 xcuserdata/
 **/GoogleService-Info.plist
+**/GoogleService-Info.plist
