@@ -22,3 +22,4 @@ GoogleService-Info.plist
 # macOS
 .DS_Store
 xcuserdata/
+**/GoogleService-Info.plist
