@@ -3,29 +3,62 @@
 //  UniTrack
 //
 //  Created by Betty Dang on 2025-11-09.
-//
 
 import Foundation
+import FirebaseFirestore
 
 struct Session: Identifiable {
-    let id = UUID()
+    let id: String?
     let title: String
-    let courseId: UUID            // Reference to the Course
+    let courseId: String
     let startDate: Date
     let endDate: Date
     let location: String
+    
+    init(id: String? = nil,
+             title: String,
+             courseId: String,
+             startDate: Date,
+             endDate: Date,
+             location: String) {
+            self.id = id
+            self.title = title
+            self.courseId = courseId
+            self.startDate = startDate
+            self.endDate = endDate
+            self.location = location
+        }
 
-    init(
-        title: String,
-        courseId: UUID,
-        startDate: Date,
-        endDate: Date,
-        location: String
-    ) {
-        self.title = title
-        self.courseId = courseId
-        self.startDate = startDate
-        self.endDate = endDate
-        self.location = location
+    func toDictionary() -> [String: Any] {
+            return [
+                "title": title,
+                "courseId": courseId,
+                "startDate": Timestamp(date: startDate),
+                "endDate": Timestamp(date: endDate),
+                "location": location
+            ]
+        }
+
+    static func fromDictionary(id: String, data: [String: Any]) -> Session? {
+        guard
+            let title = data["title"] as? String,
+            let courseId = data["courseId"] as? String,
+            let startTimestamp = data["startDate"] as? Timestamp,
+            let endTimestamp = data["endDate"] as? Timestamp,
+            let location = data["location"] as? String
+        else {
+            return nil
+        }
+
+        return Session(
+            id: id,
+            title: title,
+            courseId: courseId,
+            startDate: startTimestamp.dateValue(),
+            endDate: endTimestamp.dateValue(),
+            location: location
+        )
     }
 }
+
+

@@ -2,24 +2,63 @@
 //  TaskModel.swift
 //  UniTrack
 //
-//  Created by Betty Dang on 2025-11-09.
+//  Created by Betty Dang on 2025-11-11.
 //
 
 import Foundation
+import FirebaseFirestore
 
 struct Task: Identifiable {
-    let id = UUID()
+    var id: String?
     let title: String
     let type: String
     let dueDate: Date
     let isCompleted: Bool
-    let CourseId: Course  // task belong to spicific course
+    let courseId: String
     
-    init(title: String, type: String, dueDate: Date, isCompleted: Bool, CourseId: Course) {
-        self.title = title
-        self.type = type
-        self.dueDate = dueDate
-        self.isCompleted = isCompleted
-        self.CourseId = CourseId
+    init(id: String? = nil,
+             title: String,
+             type: String,
+             dueDate: Date,
+             isCompleted: Bool = false,
+             courseId: String) {
+            self.id = id
+            self.title = title
+            self.type = type
+            self.dueDate = dueDate
+            self.isCompleted = isCompleted
+            self.courseId = courseId
+        }
+
+    func toDictionary() -> [String: Any] {
+        return [
+            "title": title,
+            "type": type,
+            "dueDate": Timestamp(date: dueDate),
+            "isCompleted": isCompleted,
+            "courseId": courseId
+        ]
+    }
+
+    static func fromDictionary(_ data: [String: Any]) -> Task? {
+        guard
+            let title = data["title"] as? String,
+            let type = data["type"] as? String,
+            let dueTimestamp = data["dueDate"] as? Timestamp,
+            let isCompleted = data["isCompleted"] as? Bool,
+            let courseId = data["courseId"] as? String
+        else {
+            return nil
+        }
+
+        return Task(
+            id: data["id"] as? String,
+            title: title,
+            type: type,
+            dueDate: dueTimestamp.dateValue(),
+            isCompleted: isCompleted,
+            courseId: courseId
+        )
     }
 }
+
