@@ -27,7 +27,7 @@ private struct RootView: View {
   var body: some View {
     if vm.isSignedIn {
       if vm.role == "teacher" { TeacherHomeView(vm: vm) }
-      else { StudentHomeView(vm: vm) }   // default when nil or "student"
+      else { StudentHomeView(vm: vm) }   
     } else {
       AuthView(vm: vm)
     }

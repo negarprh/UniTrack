@@ -7,17 +7,19 @@
 import Foundation
 
 struct Course: Identifiable {
-    let id = UUID() 
-    let title: String
-    var tasks: [Task]
-    var sessions: [Session]
-    let teacherId: String
+    var id: String?
+        var title: String
+        var tasks: [Task]
+        var sessions: [Session]
+        var teacherId: String
 
-    init(title: String, tasks: [Task] = [], sessions: [Session] = [], teacherId: String) {
-        self.title = title
-        self.tasks = tasks
-        self.sessions = sessions
-        self.teacherId = teacherId
-    }
+        init(id: String? = nil,title: String,tasks: [Task] = [],sessions: [Session] = [],teacherId: String)
+        {
+            self.id = id
+            self.title = title
+            self.tasks = tasks
+            self.sessions = sessions
+            self.teacherId = teacherId
+        }
 }
 

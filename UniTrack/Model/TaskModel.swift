@@ -8,18 +8,20 @@
 import Foundation
 
 struct Task: Identifiable {
-    let id = UUID()
-    let title: String
-    let type: String
-    let dueDate: Date
-    let isCompleted: Bool
-    let CourseId: Course  // task belong to spicific course
+        var id: String?
+        var courseId: String
+        var type: String
+        var title: String
+        var dueDate: Date
+        var isDone: Bool
     
-    init(title: String, type: String, dueDate: Date, isCompleted: Bool, CourseId: Course) {
-        self.title = title
-        self.type = type
-        self.dueDate = dueDate
-        self.isCompleted = isCompleted
-        self.CourseId = CourseId
-    }
+    init(id: String? = nil,courseId: String,type: String,title: String,dueDate: Date,isDone: Bool,) {
+           self.id = id
+           self.courseId = courseId
+           self.type = type
+           self.title = title
+           self.dueDate = dueDate
+           self.isDone = isDone
+           
+       }
 }
