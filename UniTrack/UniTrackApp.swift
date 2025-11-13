@@ -33,6 +33,3 @@ private struct RootView: View {
     }
   }
 }
-
-
-
