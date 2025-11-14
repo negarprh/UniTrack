@@ -1,7 +1,7 @@
 # 📱 UniTrack (iOS, SwiftUI)
 
 UniTrack is a modern **student planner app** built with **SwiftUI** and **MVVM architecture**, using **Firebase Firestore** for real-time cloud storage and **local notifications** for reminders.  
-It helps students organize courses, class schedules, assignments, and study sessions — all in one clean interface.
+It helps students organize courses, class schedules, assignments, and study sessions, all in one clean interface.
 
 ![SwiftUI](https://img.shields.io/badge/SwiftUI-Enabled-blue)
 ![Firebase](https://img.shields.io/badge/Firebase-Firestore-orange)
