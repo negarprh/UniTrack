@@ -6,59 +6,23 @@
 //
 
 import Foundation
-import FirebaseFirestore
 
 struct Task: Identifiable {
-    var id: String?
-    let title: String
-    let type: String
-    let dueDate: Date
-    let isCompleted: Bool
-    let courseId: String
+        var id: String?
+        var courseId: String
+        var type: String
+        var title: String
+        var dueDate: Date
+        var isDone: Bool
     
-    init(id: String? = nil,
-             title: String,
-             type: String,
-             dueDate: Date,
-             isCompleted: Bool = false,
-             courseId: String) {
-            self.id = id
-            self.title = title
-            self.type = type
-            self.dueDate = dueDate
-            self.isCompleted = isCompleted
-            self.courseId = courseId
-        }
-
-    func toDictionary() -> [String: Any] {
-        return [
-            "title": title,
-            "type": type,
-            "dueDate": Timestamp(date: dueDate),
-            "isCompleted": isCompleted,
-            "courseId": courseId
-        ]
-    }
-
-    static func fromDictionary(_ data: [String: Any]) -> Task? {
-        guard
-            let title = data["title"] as? String,
-            let type = data["type"] as? String,
-            let dueTimestamp = data["dueDate"] as? Timestamp,
-            let isCompleted = data["isCompleted"] as? Bool,
-            let courseId = data["courseId"] as? String
-        else {
-            return nil
-        }
-
-        return Task(
-            id: data["id"] as? String,
-            title: title,
-            type: type,
-            dueDate: dueTimestamp.dateValue(),
-            isCompleted: isCompleted,
-            courseId: courseId
-        )
-    }
+    init(id: String? = nil,courseId: String,type: String,title: String,dueDate: Date,isDone: Bool,) {
+           self.id = id
+           self.courseId = courseId
+           self.type = type
+           self.title = title
+           self.dueDate = dueDate
+           self.isDone = isDone
+           
+       }
 }
 
