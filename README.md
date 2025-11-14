@@ -174,13 +174,111 @@ service cloud.firestore {
 
 ## 🧩 Milestones (Course Schedule)
 
-| Week        | Deliverable                              | Progress |
-| ----------- | ---------------------------------------- | -------- |
-| Week 8      | Proposal + UML diagrams + repo setup     | ✅        |
-| Weeks 9–10  | Firestore setup + Course/Session CRUD    | 🔄       |
-| Weeks 11–12 | Task CRUD + notifications + timer        | ⏳        |
-| Weeks 13–14 | Dashboard + validation + optional charts | 🔜       |
-| Week 15     | Final polish + README + demo             | 📦       |
+### **📌 Phase 1 – Completed (First 50%)**
+
+The first half of the project focused on building the full foundation of UniTrack:
+
+#### **Authentication + Role-Based Navigation**
+
+* Firebase Authentication (email or anonymous)
+* Automatic routing to **Student** or **Teacher** dashboard
+* Profile page showing user info and allowing sign-out
+
+#### **New Dashboard (Student + Teacher)**
+
+* Fully redesigned dashboard with four main entry points:
+
+  * **Courses**
+  * **Assignments**
+  * **Focus Timer**
+  * **Profile**
+* Cleaner UI, unified for both roles
+
+#### **Course Module (CRUD)**
+
+* Add, edit, delete courses
+* Course list with improved UI
+* Course detail screen with:
+
+  * Sessions list + “Add Session”
+  * Tasks list + “Add Task”
+
+#### **Task / Assignment Management**
+
+* Add tasks (assignment/exam)
+* Link tasks to a course
+* Mark tasks done / undone
+* Global Assignments view accessible from Dashboard
+* Every task stored under the correct course ID
+
+#### **Focus Timer**
+
+* Basic study timer built with SwiftUI
+* Ready for Phase 2 integration with StudyLog
+
+#### **Firestore Integration**
+
+* Repositories for courses, tasks, sessions
+* Live listeners that automatically update UI
+* MVVM architecture finalised
+
+**Phase 1 was delivered successfully.**
+
+---
+
+### **📌 Phase 2 – Remaining (Final 50%)**
+
+Phase 2 focuses on completing and polishing the full UniTrack experience:
+
+#### **Teacher Tools**
+
+* Manage course content more easily
+* (Optional) Analytics for student progress
+
+#### **Student UX Improvements**
+
+* “Today’s Tasks” section
+* Upcoming deadlines widget
+* Course cards with progress indicators
+
+#### **Focus Timer + Study Logs**
+
+* Save Pomodoro sessions in Firestore
+* Study history page
+
+#### **UI/UX Polish**
+
+* Color theme improvements
+* Uniform headers and cards
+* Small animations and nicer icons
+
+#### **Quality & Performance**
+
+* Error handling
+* Loading indicators
+* Cleanup of unused code
+* Testing
+
+#### **Final Deliverables**
+
+* Screenshots
+* README polish
+* PDF submission
+* Demo video preparation
+
+---
+
+### **Milestone Table (Course Schedule)**
+
+| Week            | Deliverable                           | Progress              |
+| --------------- | ------------------------------------- | --------------------- |
+| **Week 8**      | Proposal + UML diagrams + repo setup  | ✅ Completed           |
+| **Weeks 9–10**  | Firestore setup + Course/Session CRUD | ✅ Completed (Phase 1) |
+| **Weeks 11–12** | Task CRUD + timer foundation          | ✅ Completed (Phase 1) |
+| **Week 13**     | Dashboard redesign + full navigation  | ✅ Completed (Phase 1) |
+| **Week 14**     | Phase 2 UX improvements + StudyLog    | 🔜 In Progress        |
+| **Week 15**     | Final polish + README + demo          | 📦 Pending            |
+
 
 ---
 
