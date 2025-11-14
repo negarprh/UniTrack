@@ -277,14 +277,4 @@ struct AddTaskForm: View {
     }
 }
 
-#Preview {
-    CourseDetailView(
-        course: Course(
-            title: "Sample Course",
-            tasks: [],
-            sessions: [],
-            teacherId: "T001"
-        ),
-        onSave: { _ in }
-    )
-}
+

@@ -11,7 +11,8 @@ class CourseRepository {
     private let db = Firestore.firestore()
     private let collectionName = "courses"
     private var listener: ListenerRegistration?
-    // MARK: - Create
+   
+    
     func createCourse(_ course: Course, completion: @escaping (Result<Void, Error>) -> Void) {
         db.collection(collectionName).addDocument(data: course.toDictionary()) { error in
             if let error = error {
@@ -22,7 +23,7 @@ class CourseRepository {
         }
     }
 
-    // MARK: - Read (Single Course)
+    
     func getCourse(byId id: String, completion: @escaping (Result<Course, Error>) -> Void) {
         db.collection(collectionName).document(id).getDocument { document, error in
             if let error = error {

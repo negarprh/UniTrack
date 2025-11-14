@@ -39,6 +39,3 @@ struct CourseFormView: View {
         }
 }
 
-#Preview {
-    CourseFormView{ _, _ in }
-}
