@@ -8,10 +8,22 @@
 
 import SwiftUI
 
+
+struct ZenQuote: Codable {
+    let q: String
+    let a: String
+}
+
+
+
 struct DashboardView: View {
     @ObservedObject var vm: AuthViewModel
     @State private var showTeacherTimerAlert = false
     @StateObject private var holidayVM = HolidaySummaryViewModel()
+
+    
+    @State private var quoteText: String = ""
+    @State private var quoteAuthor: String = ""
 
     var body: some View {
         NavigationStack {
@@ -42,7 +54,12 @@ struct DashboardView: View {
                 Text("The focus timer is designed for student study sessions.")
             }
         }
+        .onAppear {
+            fetchDailyQuote()
+        }
     }
+
+
 
     private var isTeacher: Bool {
         vm.role == "teacher"
@@ -51,6 +68,25 @@ struct DashboardView: View {
     private var displayRole: String {
         isTeacher ? "Teacher" : "Student"
     }
+
+    private func fetchDailyQuote() {
+        guard let url = URL(string: "https://zenquotes.io/api/today") else { return }
+
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            guard
+                let data = data,
+                let decoded = try? JSONDecoder().decode([ZenQuote].self, from: data),
+                let first = decoded.first
+            else { return }
+
+            DispatchQueue.main.async {
+                self.quoteText = first.q
+                self.quoteAuthor = first.a
+            }
+        }.resume()
+    }
+
+
 
     private var headerSection: some View {
         HStack(alignment: .center, spacing: 16) {
@@ -87,18 +123,31 @@ struct DashboardView: View {
     private var overviewCard: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Today")
+                Text("Today's Quote")
                     .font(.headline)
 
-                Text(isTeacher ? "Review courses and assignments for your students."
-                               : "Check your assignments and plan a focus session.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+               
+                if quoteText.isEmpty {
+                    Text(isTeacher ? "Thank you for teaching." : "Small wins add up.")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.primary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, 4)
+                } else {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("“\(quoteText)”")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.primary)
+                            .fixedSize(horizontal: false, vertical: true)
 
-                Text(isTeacher ? "Thank you for teaching." : "Small wins add up.")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.primary)
+                        if !quoteAuthor.isEmpty {
+                            Text("- \(quoteAuthor)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                     .padding(.top, 4)
+                }
             }
 
             Spacer()
@@ -250,6 +299,7 @@ struct DashboardView: View {
     }
 }
 
+
 struct DashboardButton: View {
     let title: String
     let subtitle: String
@@ -292,7 +342,10 @@ struct DashboardButton: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 18)
-                .stroke(isDisabled ? Color.secondary.opacity(0.16) : Color.white.opacity(0.18), lineWidth: 0.6)
+                .stroke(
+                    isDisabled ? Color.secondary.opacity(0.16) : Color.white.opacity(0.18),
+                    lineWidth: 0.6
+                )
         )
         .shadow(color: Color.black.opacity(0.06), radius: 6, x: 0, y: 3)
         .opacity(isDisabled ? 0.7 : 1)
