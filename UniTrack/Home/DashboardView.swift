@@ -13,7 +13,6 @@ struct DashboardView: View {
     @State private var showTeacherTimerAlert = false
     @StateObject private var holidayVM = HolidaySummaryViewModel()
 
-
     var body: some View {
         NavigationStack {
             ZStack {
@@ -142,7 +141,7 @@ struct DashboardView: View {
     private var studentShortcuts: some View {
         VStack(spacing: 14) {
             NavigationLink {
-                TaskDashboardView()
+                TaskDashboardView(isTeacher: false)
             } label: {
                 DashboardButton(
                     title: "Assignments",
@@ -166,7 +165,7 @@ struct DashboardView: View {
             }
 
             NavigationLink {
-                CourseListView()
+                CourseListView(isTeacher: false)
             } label: {
                 DashboardButton(
                     title: "Courses",
@@ -194,7 +193,7 @@ struct DashboardView: View {
     private var teacherShortcuts: some View {
         VStack(spacing: 14) {
             NavigationLink {
-                CourseListView()
+                CourseListView(isTeacher: true)
             } label: {
                 DashboardButton(
                     title: "Courses",
@@ -206,7 +205,7 @@ struct DashboardView: View {
             }
 
             NavigationLink {
-                TaskDashboardView()
+                TaskDashboardView(isTeacher: true)
             } label: {
                 DashboardButton(
                     title: "Assignments",
@@ -249,10 +248,6 @@ struct DashboardView: View {
         HolidaySummaryCard(vm: holidayVM)
             .padding(.top, 8)
     }
-
-       
-    
-
 }
 
 struct DashboardButton: View {

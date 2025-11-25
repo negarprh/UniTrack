@@ -4,51 +4,76 @@
 //
 //  Created by Naomi on 2025-11-11.
 //
+//
 
-import Foundation
+
 import SwiftUI
+import Foundation
+
+
+struct SessionDraft: Identifiable, Hashable {
+    let id = UUID()
+    var title: String
+    var startDate: Date
+    var endDate: Date
+    var location: String
+}
 
 final class CourseViewModel: ObservableObject {
     @Published var courses: [Course] = []
     @Published var isLoading = false
 
-    private let repo = CourseRepository()
+    private let courseRepo = CourseRepository()
+    private let sessionRepo = SessionRepository()
 
     init() {
         observeCourses()
     }
 
-
     private func observeCourses() {
         isLoading = true
-        repo.listenAllCourses { [weak self] items in
+        courseRepo.listenAllCourses { [weak self] items in
             DispatchQueue.main.async {
-                
                 self?.courses = items
                 self?.isLoading = false
             }
         }
     }
 
-
-    func addCourse(title: String, teacherId: String) {
-       
-        let newId = UUID().uuidString
-
+    // teacherName is what you type in the form ("Jerry Joy")
+    func addCourse(
+        title: String,
+        teacherName: String,
+        sessionsDrafts: [SessionDraft]
+    ) {
         let newCourse = Course(
-            id: newId,
+            id: nil,
             title: title,
-            tasks: [],
-            sessions: [],
-            teacherId: teacherId
+            teacherId: teacherName   // store teacher’s name, not UID
         )
 
-        courses.append(newCourse)
+        // create course, get back its Firestore ID, then create sessions
+        courseRepo.createCourse(newCourse) { [weak self] result in
+            switch result {
+            case .failure(let err):
+                print("createCourse error:", err.localizedDescription)
 
-
-        repo.createCourse(newCourse) { result in
-            if case let .failure(err) = result {
-                print("createCourse:", err.localizedDescription)
+            case .success(let courseId):
+                for draft in sessionsDrafts {
+                    let s = Session(
+                        id: nil,
+                        title: draft.title,
+                        courseId: courseId,
+                        startDate: draft.startDate,
+                        endDate: draft.endDate,
+                        location: draft.location
+                    )
+                    self?.sessionRepo.createSession(s) { res in
+                        if case let .failure(e) = res {
+                            print("createSession error:", e.localizedDescription)
+                        }
+                    }
+                }
             }
         }
     }
@@ -59,10 +84,19 @@ final class CourseViewModel: ObservableObject {
             courses[index] = course
         }
 
-
-        repo.updateCourse(course) { result in
+        courseRepo.updateCourse(course) { result in
             if case let .failure(err) = result {
-                print("updateCourse:", err.localizedDescription)
+                print("updateCourse error:", err.localizedDescription)
+            }
+        }
+    }
+
+    func deleteCourse(id: String) {
+        courses.removeAll { $0.id == id }
+
+        courseRepo.deleteCourse(id: id) { result in
+            if case let .failure(err) = result {
+                print("deleteCourse error:", err.localizedDescription)
             }
         }
     }
@@ -75,15 +109,11 @@ final class CourseViewModel: ObservableObject {
         courses.remove(atOffsets: offsets)
 
         for id in idsToDelete {
-            repo.deleteCourse(id: id) { result in
-                if case let .failure(err) = result {
-                    print("deleteCourse:", err.localizedDescription)
-                }
-            }
+            deleteCourse(id: id)
         }
     }
 
     deinit {
-        repo.stopListening()
+        courseRepo.stopListening()
     }
 }
