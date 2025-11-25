@@ -5,6 +5,8 @@
 //  Created by Naomi on 2025-11-11.
 //
 
+
+
 import SwiftUI
 
 struct CourseListView: View {
@@ -44,7 +46,7 @@ struct CourseListView: View {
                                         }
                                     )
                                 } label: {
-                                    CourseCard(course: course)
+                                    CourseCard(course: course, isTeacher: isTeacher)
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -55,7 +57,7 @@ struct CourseListView: View {
                     }
                 }
             }
-            .navigationTitle("Courses")
+            .navigationTitle(isTeacher ? "Courses" : "My Courses")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 if isTeacher {
@@ -69,10 +71,10 @@ struct CourseListView: View {
                 }
             }
             .sheet(isPresented: $addCourse) {
-                CourseFormView { title, sessionDrafts in
-                 
+                CourseFormView { title, teacherName, sessionDrafts in
                     viewModel.addCourse(
                         title: title,
+                        teacherName: teacherName,
                         sessionsDrafts: sessionDrafts
                     )
                 }
@@ -82,13 +84,13 @@ struct CourseListView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(isTeacher ? "Manage your classes" : "Your courses")
+            Text(isTeacher ? "Manage your classes" : "Your enrolled courses")
                 .font(.headline)
                 .foregroundStyle(.primary)
 
             Text(isTeacher
-                 ? "Tap a course to manage its weekly sessions."
-                 : "Tap a course to view its weekly sessions.")
+                 ? "Tap a course to manage its info and weekly sessions."
+                 : "Tap a course to see its schedule and assignments.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
@@ -105,8 +107,8 @@ struct CourseListView: View {
                 .font(.title3.weight(.semibold))
 
             Text(isTeacher
-                 ? "Start by adding a course. You can then add weekly sessions for it."
-                 : "Your courses will appear here once your teachers add them.")
+                 ? "Start by adding a course. Students will see it in their dashboard."
+                 : "Your courses will appear here once your teachers add them in UniTrack.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -138,6 +140,7 @@ struct CourseListView: View {
 
 struct CourseCard: View {
     let course: Course
+    let isTeacher: Bool
 
     var body: some View {
         HStack(spacing: 16) {
@@ -158,7 +161,9 @@ struct CourseCard: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
 
-                Text("Tap to manage course info and sessions")
+                Text(isTeacher
+                     ? "Tap to edit details and sessions"
+                     : "Tap to view schedule and assignments")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

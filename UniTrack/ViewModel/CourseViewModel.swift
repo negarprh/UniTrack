@@ -4,8 +4,10 @@
 //
 //  Created by Naomi on 2025-11-11.
 //
+//
 
-import FirebaseAuth
+
+import SwiftUI
 import Foundation
 
 
@@ -38,20 +40,24 @@ final class CourseViewModel: ObservableObject {
         }
     }
 
-    func addCourse(title: String,
-                   sessionsDrafts: [SessionDraft]) {
-        let teacherId = Auth.auth().currentUser?.uid ?? ""
-
+    // teacherName is what you type in the form ("Jerry Joy")
+    func addCourse(
+        title: String,
+        teacherName: String,
+        sessionsDrafts: [SessionDraft]
+    ) {
         let newCourse = Course(
             id: nil,
             title: title,
-            teacherId: teacherId
+            teacherId: teacherName   // store teacher’s name, not UID
         )
 
+        // create course, get back its Firestore ID, then create sessions
         courseRepo.createCourse(newCourse) { [weak self] result in
             switch result {
             case .failure(let err):
                 print("createCourse error:", err.localizedDescription)
+
             case .success(let courseId):
                 for draft in sessionsDrafts {
                     let s = Session(
@@ -96,15 +102,12 @@ final class CourseViewModel: ObservableObject {
     }
 
     func deleteCourse(at offsets: IndexSet) {
-    
         let idsToDelete: [String] = offsets.compactMap { idx in
             courses[idx].id
         }
 
-      
         courses.remove(atOffsets: offsets)
 
-   
         for id in idsToDelete {
             deleteCourse(id: id)
         }

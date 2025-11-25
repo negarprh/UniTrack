@@ -12,52 +12,71 @@ struct CourseFormView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var title: String = ""
+    @State private var teacherName: String = ""
     @State private var sessionDrafts: [SessionDraft] = []
     @State private var showingAddSessionSheet = false
 
-   
-    let onSave: (String, [SessionDraft]) -> Void
+    let onSave: (String, String, [SessionDraft]) -> Void
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
-                    TextField("Course title", text: $title)
-                } header: {
-                    Label("Course Info", systemImage: "book.closed")
-                }
+            ZStack {
+                LinearGradient(
+                    colors: [.blue.opacity(0.1), .purple.opacity(0.18)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
 
-                Section {
-                    if sessionDrafts.isEmpty {
-                        Text("No weekly sessions added yet.")
-                            .foregroundColor(.secondary)
-                    } else {
-                        ForEach(sessionDrafts) { draft in
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(draft.title)
-                                    .font(.subheadline.weight(.semibold))
-                                Text(timeRangeText(for: draft))
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text(draft.location)
-                                    .font(.caption2)
-                                    .foregroundColor(.secondary)
+                Form {
+                    Section {
+                        TextField("Course title", text: $title)
+                        TextField("Teacher name", text: $teacherName)
+                    } header: {
+                        Label("Course Info", systemImage: "book.closed")
+                    } footer: {
+                        Text("This information appears in the course list and on the student dashboard.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Section {
+                        if sessionDrafts.isEmpty {
+                            Text("No weekly sessions added yet.")
+                                .foregroundColor(.secondary)
+                        } else {
+                            ForEach(sessionDrafts) { draft in
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(draft.title)
+                                        .font(.subheadline.weight(.semibold))
+                                    Text(timeRangeText(for: draft))
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Text(draft.location)
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                }
+                                .padding(.vertical, 2)
                             }
-                            .padding(.vertical, 2)
+                            .onDelete { indexSet in
+                                sessionDrafts.remove(atOffsets: indexSet)
+                            }
                         }
-                        .onDelete { indexSet in
-                            sessionDrafts.remove(atOffsets: indexSet)
-                        }
-                    }
 
-                    Button {
-                        showingAddSessionSheet = true
-                    } label: {
-                        Label("Add Session", systemImage: "plus")
+                        Button {
+                            showingAddSessionSheet = true
+                        } label: {
+                            Label("Add Session", systemImage: "plus")
+                        }
+                    } header: {
+                        Label("Weekly Sessions", systemImage: "calendar")
+                    } footer: {
+                        Text("Add one or more weekly time slots for this course.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
-                } header: {
-                    Label("Weekly Sessions", systemImage: "calendar")
                 }
+                .scrollContentBackground(.hidden)
             }
             .navigationTitle("New Course")
             .navigationBarTitleDisplayMode(.inline)
@@ -67,10 +86,10 @@ struct CourseFormView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        onSave(title, sessionDrafts)
+                        onSave(title, teacherName, sessionDrafts)
                         dismiss()
                     }
-                    .disabled(title.isEmpty)
+                    .disabled(title.isEmpty || teacherName.isEmpty)
                 }
             }
             .sheet(isPresented: $showingAddSessionSheet) {

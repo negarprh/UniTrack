@@ -5,6 +5,7 @@
 //  Created by Negar Pirasteh on 2025-11-13.
 //
 
+
 import SwiftUI
 
 struct DashboardView: View {
@@ -140,7 +141,7 @@ struct DashboardView: View {
     private var studentShortcuts: some View {
         VStack(spacing: 14) {
             NavigationLink {
-                TaskDashboardView()
+                TaskDashboardView(isTeacher: false)
             } label: {
                 DashboardButton(
                     title: "Assignments",
@@ -204,7 +205,7 @@ struct DashboardView: View {
             }
 
             NavigationLink {
-                TaskDashboardView()
+                TaskDashboardView(isTeacher: true)
             } label: {
                 DashboardButton(
                     title: "Assignments",

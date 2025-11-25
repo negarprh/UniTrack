@@ -5,6 +5,7 @@
 //  Created by Negar Pirasteh on 2025-11-13.
 //
 
+
 import SwiftUI
 
 struct ProfileView: View {
@@ -27,7 +28,12 @@ struct ProfileView: View {
             ScrollView {
                 VStack(spacing: 28) {
                     headerSection
-                    studyStatsCard
+
+                    // Only students see study stats
+                    if !isTeacher {
+                        studyStatsCard
+                    }
+
                     accountCard
                     appCard
                     signOutButton
@@ -43,6 +49,8 @@ struct ProfileView: View {
             ChangePasswordSheet(vm: vm)
         }
     }
+
+    
 
     private var headerSection: some View {
         VStack(spacing: 16) {
@@ -214,6 +222,8 @@ struct ProfileView: View {
         .padding(.top, 8)
     }
 
+    // MARK: - Helpers
+
     private func statItem(icon: String, title: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 6) {
@@ -230,12 +240,16 @@ struct ProfileView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
+    private var isTeacher: Bool {
+        vm.role == "teacher"
+    }
+
     private var roleLabel: String {
-        vm.role == "teacher" ? "Teacher" : "Student"
+        isTeacher ? "Teacher" : "Student"
     }
 
     private var roleColor: Color {
-        vm.role == "teacher" ? .orange : .green
+        isTeacher ? .orange : .green
     }
 
     private var displayName: String {
@@ -250,7 +264,9 @@ struct ProfileView: View {
     }
 
     private var initials: String {
-        if let email = vm.email, let namePart = email.split(separator: "@").first, let first = namePart.first {
+        if let email = vm.email,
+           let namePart = email.split(separator: "@").first,
+           let first = namePart.first {
             return String(first).uppercased()
         }
         return "U"

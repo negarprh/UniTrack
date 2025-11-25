@@ -5,40 +5,73 @@
 //  Created by Naomi on 2025-11-12.
 //
 
+
 import Foundation
-import SwiftUI
+
+struct TaskDraft {
+    var title: String
+    var courseId: String
+    var courseTitle: String
+    var dueDate: Date
+}
 
 final class TaskViewModel: ObservableObject {
     @Published var tasks: [Task] = []
+    @Published var isLoading = false
+
     private let repo = TaskRepository()
 
-    func load(forCourseId courseId: String) {
-        repo.getTasks(forCourseId: courseId) { [weak self] result in
+    init() {
+        observeTasks()
+    }
+
+    private func observeTasks() {
+        isLoading = true
+        repo.listenAllTasks { [weak self] items in
             DispatchQueue.main.async {
-                if case .success(let items) = result { self?.tasks = items }
-                else { self?.tasks = [] }
+                self?.tasks = items
+                self?.isLoading = false
             }
         }
     }
 
-    func add(_ t: Task, completion: (() -> Void)? = nil) {
-        repo.createTask(t) { _ in completion?() }
-    }
-    func update(_ t: Task, completion: (() -> Void)? = nil) {
-           repo.updateTask(t) { _ in completion?() }
-       }
+    func addTask(from draft: TaskDraft) {
+        let newTask = Task(
+            id: nil,
+            title: draft.title,
+            courseId: draft.courseId,
+            courseTitle: draft.courseTitle,
+            dueDate: draft.dueDate,
+            isDone: false
+        )
 
-    func toggleDone(_ t: Task) {
-            var copy = t
-            copy.isDone.toggle()
-            update(copy)
+        repo.createTask(newTask) { result in
+            if case let .failure(err) = result {
+                print("addTask error:", err.localizedDescription)
+            }
         }
+    }
 
-    func delete(_ t: Task, completion: (() -> Void)? = nil) {
-        guard let id = t.id else { completion?(); return }
-        repo.deleteTask(id: id) { _ in completion?() }
+    func toggleDone(_ task: Task) {
+        var updated = task
+        updated.isDone.toggle()
+        repo.updateTask(updated) { result in
+            if case let .failure(err) = result {
+                print("toggleDone error:", err.localizedDescription)
+            }
+        }
+    }
+
+    func deleteTask(_ task: Task) {
+        guard let id = task.id else { return }
+        repo.deleteTask(id: id) { result in
+            if case let .failure(err) = result {
+                print("deleteTask error:", err.localizedDescription)
+            }
+        }
+    }
+
+    deinit {
+        repo.stopListening()
     }
 }
-
-
-
