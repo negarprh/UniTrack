@@ -22,7 +22,7 @@ class TaskRepository {
         ]
     }
 
-    // Decode
+   
     private func decode(id: String, _ data: [String: Any]) -> Task? {
         guard
             let title = data["title"] as? String,
@@ -42,7 +42,7 @@ class TaskRepository {
         )
     }
 
-    // Create
+  
     func createTask(_ task: Task, completion: @escaping (Result<Void, Error>) -> Void) {
         db.collection(collectionName).addDocument(data: encode(task)) { error in
             if let error = error { completion(.failure(error)) }
@@ -50,7 +50,7 @@ class TaskRepository {
         }
     }
 
-    // Read single
+  
     func getTask(byId id: String, completion: @escaping (Result<Task, Error>) -> Void) {
         db.collection(collectionName).document(id).getDocument { doc, error in
             if let error = error { completion(.failure(error)); return }
@@ -68,7 +68,6 @@ class TaskRepository {
         }
     }
 
-    // Read by course
     func getTasks(forCourseId courseId: String, completion: @escaping (Result<[Task], Error>) -> Void) {
         db.collection(collectionName)
             .whereField("courseId", isEqualTo: courseId)
@@ -82,7 +81,7 @@ class TaskRepository {
             }
     }
 
-    // Update
+    
     func updateTask(_ task: Task, completion: @escaping (Result<Void, Error>) -> Void) {
         guard let id = task.id, !id.isEmpty else {
             completion(.failure(NSError(domain: "TaskRepository", code: 400,
@@ -95,7 +94,7 @@ class TaskRepository {
         }
     }
 
-    // Delete
+    
     func deleteTask(id: String, completion: @escaping (Result<Void, Error>) -> Void) {
         db.collection(collectionName).document(id).delete { error in
             if let error = error { completion(.failure(error)) }

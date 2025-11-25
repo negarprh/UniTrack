@@ -11,7 +11,6 @@ struct TaskDashboardView: View {
     @StateObject private var taskVM = TaskViewModel()
     @State private var showNewTask = false
 
-    // pseudo course id used only from the dashboard
     private let dashboardCourseId = "dashboard"
 
     var body: some View {
@@ -21,7 +20,7 @@ struct TaskDashboardView: View {
                     viewModel: taskVM,
                     courseId: dashboardCourseId,
                     onEdit: { task in
-                        // TODO: if you want an edit flow later, open TaskFormView pre-filled
+                  
                         print("Edit tapped for \(task.title)")
                     },
                     onAdd: {

@@ -22,7 +22,7 @@ struct TaskListSection: View {
                     HStack {
                         
                         Button {
-                            var updated = task
+                            let updated = task
                             viewModel.toggleDone(updated) 
                         } label: {
                             Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
@@ -41,7 +41,7 @@ struct TaskListSection: View {
 
                         Spacer()
 
-                        // Edit button (optional)
+                       
                         Button {
                             onEdit(task)
                         } label: {

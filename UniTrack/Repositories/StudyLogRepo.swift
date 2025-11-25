@@ -11,7 +11,7 @@ class StudyLogRepository {
     private let db = Firestore.firestore()
     private let collectionName = "studyLogs"
     
-    // Create
+  
     func createStudyLog(_ studyLog: StudyLog, completion: @escaping (Result<Void, Error>) -> Void) {
         let data = studyLog.toDictionary()
         db.collection(collectionName).addDocument(data: data) { error in
@@ -23,7 +23,7 @@ class StudyLogRepository {
         }
     }
     
-    // Read
+ 
     func getStudyLog(byId id: String, completion: @escaping (Result<StudyLog, Error>) -> Void) {
         db.collection(collectionName).document(id).getDocument { document, error in
             if let error = error {
@@ -44,7 +44,7 @@ class StudyLogRepository {
         }
     }
     
-    // Update
+ 
     func updateStudyLog(_ studyLog: StudyLog, completion: @escaping (Result<Void, Error>) -> Void) {
         guard let id = studyLog.id else {
             completion(.failure(NSError(domain: "StudyLogRepository", code: 400, userInfo: [NSLocalizedDescriptionKey: "Missing StudyLog ID."])))
@@ -61,7 +61,7 @@ class StudyLogRepository {
         }
     }
     
-    // Delete
+    
     func deleteStudyLog(id: String, completion: @escaping (Result<Void, Error>) -> Void) {
         db.collection(collectionName).document(id).delete { error in
             if let error = error {
@@ -72,7 +72,7 @@ class StudyLogRepository {
         }
     }
     
-    // Get all logs for Course
+    
     func getStudyLogs(forCourseId courseId: String, completion: @escaping (Result<[StudyLog], Error>) -> Void) {
         db.collection(collectionName)
             .whereField("courseId", isEqualTo: courseId)
@@ -90,7 +90,7 @@ class StudyLogRepository {
             }
     }
     
-    // Get all logs for Session
+    
     func getStudyLogs(forSessionId sessionId: String, completion: @escaping (Result<[StudyLog], Error>) -> Void) {
         db.collection(collectionName)
             .whereField("sessionId", isEqualTo: sessionId)

@@ -5,14 +5,12 @@
 //  Created by Negar Pirasteh on 2025-11-13.
 //
 
-
 import SwiftUI
 
 struct DashboardView: View {
     @ObservedObject var vm: AuthViewModel
     @State private var showTeacherTimerAlert = false
     @StateObject private var holidayVM = HolidaySummaryViewModel()
-
 
     var body: some View {
         NavigationStack {
@@ -166,7 +164,7 @@ struct DashboardView: View {
             }
 
             NavigationLink {
-                CourseListView()
+                CourseListView(isTeacher: false)
             } label: {
                 DashboardButton(
                     title: "Courses",
@@ -194,7 +192,7 @@ struct DashboardView: View {
     private var teacherShortcuts: some View {
         VStack(spacing: 14) {
             NavigationLink {
-                CourseListView()
+                CourseListView(isTeacher: true)
             } label: {
                 DashboardButton(
                     title: "Courses",
@@ -249,10 +247,6 @@ struct DashboardView: View {
         HolidaySummaryCard(vm: holidayVM)
             .padding(.top, 8)
     }
-
-       
-    
-
 }
 
 struct DashboardButton: View {

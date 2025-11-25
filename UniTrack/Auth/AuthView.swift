@@ -190,7 +190,7 @@ struct AuthView: View {
     }
 }
 
-// Reusable input style
+
 private struct FieldStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
@@ -206,3 +206,5 @@ private struct FieldStyle: ViewModifier {
             )
     }
 }
+
+

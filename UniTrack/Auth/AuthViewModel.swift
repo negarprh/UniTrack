@@ -165,5 +165,37 @@ final class AuthViewModel: ObservableObject {
             }
         }
     }
+    
+    func changePassword(currentPassword: String, newPassword: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        guard let user = Auth.auth().currentUser, let email = user.email else {
+            let error = NSError(domain: "Auth", code: 0, userInfo: [NSLocalizedDescriptionKey: "No user is signed in."])
+            DispatchQueue.main.async {
+                completion(.failure(error))
+            }
+            return
+        }
+
+        let credential = EmailAuthProvider.credential(withEmail: email, password: currentPassword)
+
+        user.reauthenticate(with: credential) { _, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+                return
+            }
+
+            user.updatePassword(to: newPassword) { error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        completion(.failure(error))
+                    } else {
+                        completion(.success(()))
+                    }
+                }
+            }
+        }
+    }
+
 }
 

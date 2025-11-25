@@ -8,179 +8,146 @@
 import SwiftUI
 
 struct CourseDetailView: View {
+    @Environment(\.dismiss) private var dismiss
+
     @State var course: Course
+    let isTeacher: Bool
     let onSave: (Course) -> Void
+    let onDelete: (Course) -> Void
 
-    @State private var sessions: [Session] = []
+    @StateObject private var sessionVM: SessionViewModel
+
     @State private var showingAddSession = false
-    private let sessionRepo = SessionRepository()
 
-    
-    @State private var tasks: [Task] = []
-    @State private var showingAddTask = false
-    private let taskRepo = TaskRepository()
+    init(course: Course,
+         isTeacher: Bool,
+         onSave: @escaping (Course) -> Void,
+         onDelete: @escaping (Course) -> Void) {
+        _course = State(initialValue: course)
+        self.isTeacher = isTeacher
+        self.onSave = onSave
+        self.onDelete = onDelete
+
+        _sessionVM = StateObject(
+            wrappedValue: SessionViewModel(courseId: course.id ?? "")
+        )
+    }
 
     var body: some View {
         Form {
            
-            Section("Course Info") {
-                TextField("Title", text: $course.title)
-                TextField("Teacher ID", text: $course.teacherId)
+            Section {
+                if isTeacher {
+                    TextField("Course title", text: $course.title)
+                    TextField("Teacher id / name", text: $course.teacherId)
+                } else {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(course.title)
+                            .font(.headline)
+                        Text("Teacher: \(course.teacherId)")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            } header: {
+                Label("Course Info", systemImage: "info.circle")
             }
 
             
-            Section("Sessions") {
-                if sessions.isEmpty {
-                    Text("No sessions yet")
-                        .foregroundColor(.secondary)
+            Section {
+                if sessionVM.sessions.isEmpty {
+                    HStack(spacing: 10) {
+                        Image(systemName: "calendar.badge.exclamationmark")
+                            .foregroundStyle(.secondary)
+                        Text("No weekly sessions yet")
+                            .foregroundColor(.secondary)
+                    }
                 } else {
-                    ForEach(sessions) { session in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(session.title).font(.headline)
-                            Text(session.location)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text("\(session.startDate.formatted(date: .abbreviated, time: .shortened)) – \(session.endDate.formatted(date: .abbreviated, time: .shortened))")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                        }
+                    ForEach(sessionVM.sessions) { session in
+                        sessionRow(session)
                     }
                     .onDelete { indexSet in
-                        let toDelete = indexSet.map { sessions[$0] }
-                        for s in toDelete {
-                            if let id = s.id {
-                                sessionRepo.deleteSession(id: id) { _ in
-                                    loadSessions()
-                                }
-                            }
+                        guard isTeacher else { return }
+                        let items = indexSet.map { sessionVM.sessions[$0] }
+                        for s in items {
+                            sessionVM.delete(s)
                         }
                     }
                 }
 
-                Button {
-                    showingAddSession = true
-                } label: {
-                    Label("Add Session", systemImage: "plus")
-                }
-            }
-
-            
-            Section("Tasks") {
-                if tasks.isEmpty {
-                    Text("No tasks yet")
-                        .foregroundColor(.secondary)
-                } else {
-                    ForEach(tasks) { task in
-                        HStack {
-                            // Toggle completion
-                            Button {
-                                var updated = task
-                                updated.isDone.toggle()
-                                taskRepo.updateTask(updated) { _ in
-                                    loadTasks()
-                                }
-                            } label: {
-                                Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
-                            }
-                            .buttonStyle(.plain)
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(task.title).font(.headline)
-                                Text("\(task.type.capitalized) • due \(task.dueDate.formatted(date: .abbreviated, time: .omitted))")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                        }
-                    }
-                    .onDelete { indexSet in
-                        let toDelete = indexSet.map { tasks[$0] }
-                        for t in toDelete {
-                            if let id = t.id {
-                                taskRepo.deleteTask(id: id) { _ in
-                                    loadTasks()
-                                }
-                            }
-                        }
+                if isTeacher {
+                    Button {
+                        showingAddSession = true
+                    } label: {
+                        Label("Add Session", systemImage: "plus")
                     }
                 }
-
-                Button {
-                    showingAddTask = true
-                } label: {
-                    Label("Add Task", systemImage: "plus")
-                }
+            } header: {
+                Label("Weekly Sessions", systemImage: "calendar")
             }
         }
         .navigationTitle(course.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    onSave(course)
+            ToolbarItem(placement: .navigationBarLeading) {
+                if isTeacher, course.id != nil {
+                    Button(role: .destructive) {
+                        onDelete(course)
+                        dismiss()
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                }
+            }
+
+            if isTeacher {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        onSave(course)
+                    }
                 }
             }
         }
         .onAppear {
-            loadSessions()
-            loadTasks()
+            if course.id != nil {
+                sessionVM.load()
+            }
         }
-       
         .sheet(isPresented: $showingAddSession) {
             AddSessionForm(courseId: course.id ?? "") { newSession in
-                sessionRepo.createSession(newSession) { _ in
-                    loadSessions()
-                }
-            }
-        }
-        
-        .sheet(isPresented: $showingAddTask) {
-            AddTaskForm(courseId: course.id ?? "") { newTask in
-                taskRepo.createTask(newTask) { _ in
-                    loadTasks()
-                }
+                sessionVM.add(newSession)
             }
         }
     }
 
-    
-    private func loadSessions() {
-        guard let courseId = course.id, !courseId.isEmpty else {
-            sessions = []
-            return
-        }
-        sessionRepo.getSessions(forCourseId: courseId) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let fetched):
-                    self.sessions = fetched
-                case .failure(let error):
-                    print("Error fetching sessions: \(error.localizedDescription)")
-                    self.sessions = []
-                }
-            }
-        }
-    }
+    private func sessionRow(_ session: Session) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Text(session.weekdayText)
+                .font(.caption.weight(.semibold))
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(
+                    Capsule()
+                        .fill(Color.blue.opacity(0.12))
+                )
+                .foregroundStyle(.blue)
 
-    private func loadTasks() {
-        guard let courseId = course.id, !courseId.isEmpty else {
-            tasks = []
-            return
-        }
-        taskRepo.getTasks(forCourseId: courseId) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let items):
-                    self.tasks = items
-                case .failure(let err):
-                    print("Error fetching tasks:", err.localizedDescription)
-                    self.tasks = []
-                }
+            VStack(alignment: .leading, spacing: 4) {
+                Text(session.title)
+                    .font(.subheadline.weight(.semibold))
+                Text(session.timeRangeText)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(session.location)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
             }
+
+            Spacer()
         }
+        .padding(.vertical, 2)
     }
 }
-
 
 struct AddSessionForm: View {
     @Environment(\.dismiss) private var dismiss
@@ -199,11 +166,14 @@ struct AddSessionForm: View {
                 Section("Session Info") {
                     TextField("Title", text: $title)
                     TextField("Location", text: $location)
-                    DatePicker("Start", selection: $startDate, displayedComponents: [.date, .hourAndMinute])
-                    DatePicker("End", selection: $endDate, displayedComponents: [.date, .hourAndMinute])
+                    DatePicker("Start", selection: $startDate,
+                               displayedComponents: [.date, .hourAndMinute])
+                    DatePicker("End", selection: $endDate,
+                               displayedComponents: [.date, .hourAndMinute])
                 }
             }
             .navigationTitle("New Session")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -211,6 +181,7 @@ struct AddSessionForm: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         let s = Session(
+                            id: nil,
                             title: title,
                             courseId: courseId,
                             startDate: startDate,
@@ -226,55 +197,3 @@ struct AddSessionForm: View {
         }
     }
 }
-
-
-struct AddTaskForm: View {
-    @Environment(\.dismiss) private var dismiss
-
-    let courseId: String
-    let onSave: (Task) -> Void
-
-    @State private var title: String = ""
-    @State private var type: String = "assignment"  // or "exam"
-    @State private var dueDate: Date = Date()
-    @State private var isDone: Bool = false
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section("Task Info") {
-                    TextField("Title", text: $title)
-                    Picker("Type", selection: $type) {
-                        Text("Assignment").tag("assignment")
-                        Text("Exam").tag("exam")
-                    }
-                    DatePicker("Due Date", selection: $dueDate, displayedComponents: [.date])
-                    Toggle("Completed", isOn: $isDone)
-                }
-            }
-            .navigationTitle("New Task")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        let t = Task(
-                            id: nil,
-                            courseId: courseId,
-                            type: type,
-                            title: title,
-                            dueDate: dueDate,
-                            isDone: isDone
-                        )
-                        onSave(t)
-                        dismiss()
-                    }
-                    .disabled(title.isEmpty || courseId.isEmpty)
-                }
-            }
-        }
-    }
-}
-
-
