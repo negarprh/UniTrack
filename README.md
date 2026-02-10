@@ -84,10 +84,6 @@ users/{uid}/studyLogs/{logId}
   </tr>
   <tr>
     <td align="center">
-      <b>Dashboard</b><br>
-      <img src="UniTrack/Docs/Screenshots/Student/dashboard2.png" width="220">
-    </td>
-    <td align="center">
       <b>Courses</b><br>
       <img src="UniTrack/Docs/Screenshots/Student/course.png" width="220">
     </td>
