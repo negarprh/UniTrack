@@ -58,14 +58,71 @@ users/{uid}/studyLogs/{logId}
 - Uses **Firebase Authentication** (email or anonymous) to isolate user data.  
 - Data syncs automatically when online.
 
-### 🔔 Notifications
-- Reminds students of **upcoming due dates** using `UNUserNotificationCenter`.  
-- Configurable per task creation or edit.
-
 ### 📊 Progress Dashboard
 - Shows percentage of completed tasks per course.  
 - Displays “Due Soon” tasks and today’s schedule.  
 - Optional **Swift Charts** graph of weekly study time.
+
+---
+
+## 📸 Screenshots (Student)
+
+<table>
+  <tr>
+    <td align="center">
+      <b>Sign Up</b><br>
+      <img src="UniTrack/Docs/Screenshots/Student/signup.png" width="220">
+    </td>
+    <td align="center">
+      <b>Sign In</b><br>
+      <img src="UniTrack/Docs/Screenshots/Student/signin.png" width="220">
+    </td>
+    <td align="center">
+      <b>Dashboard</b><br>
+      <img src="UniTrack/Docs/Screenshots/Student/dashboard1.png" width="220">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <b>Dashboard</b><br>
+      <img src="UniTrack/Docs/Screenshots/Student/dashboard2.png" width="220">
+    </td>
+    <td align="center">
+      <b>Courses</b><br>
+      <img src="UniTrack/Docs/Screenshots/Student/course.png" width="220">
+    </td>
+    <td align="center">
+      <b>Course Detail</b><br>
+      <img src="UniTrack/Docs/Screenshots/Student/coursedetail.png" width="220">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <b>Assignments</b><br>
+      <img src="UniTrack/Docs/Screenshots/Student/assignment.png" width="220">
+    </td>
+    <td align="center">
+      <b>Pomodoro</b><br>
+      <img src="UniTrack/Docs/Screenshots/Student/pomodoro1.png" width="220">
+    </td>
+    <td align="center">
+      <b>Pomodoro</b><br>
+      <img src="UniTrack/Docs/Screenshots/Student/pomodoro2.png" width="220">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <b>Pomodoro</b><br>
+      <img src="UniTrack/Docs/Screenshots/Student/pomodoro3.png" width="220">
+    </td>
+    <td align="center">
+      <b>Profile</b><br>
+      <img src="UniTrack/Docs/Screenshots/Student/profile.png" width="220">
+    </td>
+    <td></td>
+  </tr>
+</table>
+
 
 ---
 
