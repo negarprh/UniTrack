@@ -91,12 +91,12 @@ users/{uid}/studyLogs/{logId}
       <b>Course Detail</b><br>
       <img src="UniTrack/Docs/Screenshots/Student/coursedetail.png" width="220">
     </td>
-  </tr>
-  <tr>
-    <td align="center">
+        <td align="center">
       <b>Assignments</b><br>
       <img src="UniTrack/Docs/Screenshots/Student/assignment.png" width="220">
     </td>
+  </tr>
+  <tr>
     <td align="center">
       <b>Pomodoro</b><br>
       <img src="UniTrack/Docs/Screenshots/Student/pomodoro1.png" width="220">
@@ -105,12 +105,12 @@ users/{uid}/studyLogs/{logId}
       <b>Pomodoro</b><br>
       <img src="UniTrack/Docs/Screenshots/Student/pomodoro2.png" width="220">
     </td>
-  </tr>
-  <tr>
-    <td align="center">
+        <td align="center">
       <b>Pomodoro</b><br>
       <img src="UniTrack/Docs/Screenshots/Student/pomodoro3.png" width="220">
     </td>
+  </tr>
+  <tr>
     <td align="center">
       <b>Profile</b><br>
       <img src="UniTrack/Docs/Screenshots/Student/profile.png" width="220">
